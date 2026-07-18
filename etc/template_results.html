@@ -55,8 +55,14 @@
       <pre>
 <code>{{ r.server_log }}</code>
       </pre>
-      <p>Packets:</p>
-      {% for p in r.packets %}
+      <p>UDP Packets:</p>
+      {% for p in r.udp_packets %}
+      <pre>
+<code>{{ p }}</code>
+      </pre>
+      {% endfor %}
+      <p>TCP Packets:</p>
+      {% for p in r.tcp_packets %}
       <pre>
 <code>{{ p }}</code>
       </pre>

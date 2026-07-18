@@ -18,7 +18,7 @@ import jinja2
 import pyroughtime  # type: ignore[import]
 import scapy.utils
 import yaml
-from scapy.layers.inet import UDP
+from scapy.layers.inet import UDP, TCP
 
 CMD_INFO = """
 plummet takes all the known roughtime implementations and attempts to perform
@@ -175,15 +175,21 @@ def parse_pcap(
             pcap_file.flush()
             pcap = scapy.utils.rdpcap(pcap_file.name)
             pcap_file.close()
-            cli["packets"] = []  # type: ignore
+            cli["udp_packets"] = []  # type: ignore
+            cli["tcp_packets"] = []  # type: ignore
             for p in pcap:
                 udp = p.getlayer(UDP)
-                if udp is None:
-                    continue
+                tcp = p.getlayer(TCP)
 
-                if udp.sport == 2002 or udp.dport == 2002:
-                    rp = pyroughtime.RoughtimePacket(packet=bytes(udp.payload))
-                    cli["packets"].append(packet_tree_str(rp))  # type: ignore
+                if udp is not None:
+                    if udp.sport == 2002 or udp.dport == 2002:
+                        rp = pyroughtime.RoughtimePacket(packet=bytes(udp.payload))
+                        cli["udp_packets"].append(packet_tree_str(rp))  # type: ignore
+
+                if tcp is not None:
+                    if tcp.sport == 2002 or tcp.dport == 2002:
+                        rp = pyroughtime.RoughtimePacket(packet=bytes(udp.payload))
+                        cli["tcp_packets"].append(packet_tree_str(rp))  # type: ignore
 
     return results  # type: ignore
 
